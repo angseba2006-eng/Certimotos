@@ -609,12 +609,7 @@
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="modal-gallery">
-        <div class="gal-main"><img src="https://i.ibb.co/xtKK9dZS/AI-Product-Images-Victory-Arizona-200-Fox-2026-107dcc-e1c790fdc8a74394a867ead37c584c29-mv2-png.png" alt="Victory Arizona 200 Fox 2026 - vista principal"></div>
-        <div class="gal-thumb"><img src="https://i.ibb.co/QvfFQ6B4/AI-Product-Images-Victory-Arizona-200-Fox-2026-107dcc-f03bd33e05dc4e808f30cb6103a13d6b-mv2-png.png" alt="Victory Arizona 200 Fox - lateral"></div>
-        <div class="gal-thumb"><img src="https://i.ibb.co/j9TBL1cW/655247604-943942851668380-4364499282023688372-n.jpg" alt="Victory Arizona 200 Fox - detalle"></div>
-        <div class="gal-thumb" style="grid-column:span 1"><img src="https://i.ibb.co/fY9kwdxL/656225527-1719927132750740-7974423783463517447-n.jpg" alt="Victory Arizona 200 Fox - extras"></div>
-      </div>
+      <div class="modal-gallery" id="modalGallery"></div>
 
       <!-- Descripción general -->
       <p id="md-descripcion" style="font-size:.92rem;color:var(--gray-600);line-height:1.65;margin-bottom:1.25rem;background:var(--gray-100);border-radius:10px;padding:.9rem 1rem;">
@@ -759,17 +754,57 @@
       waText: "Hola%2C%20me%20interesa%20la%20Victory%20Arizona%20200%20Fox%202026%20en%20Certimotos.%20Quisiera%20iniciar%20el%20proceso%20de%20compra%20segura."
     }
     // → Para agregar motos: copia el objeto de arriba y cambia los datos
+    ,{
+      id: 2,
+      nombre: "Victory Arizona 200",
+      modelo: "2026",
+      km: "26.500",
+      precio: "$10.000.000",
+      precioNota: "*Precio con proceso Certimotos incluido",
+      ubicacion: "Barranquilla",
+      estado: "Bueno — bien conservada",
+      descripcion: "Arizona 200 con extras premium. Manubrio Protaper original y resonador Akrapovic. Disponible bajo proceso Certimotos para una compra 100% segura y legal.",
+      extras: ["Manubrio Protaper Original", "Resonador Akrapovic", "LiquiMoly 20w-50 reciente", "Traspaso incluido"],
+      emoji: "🏍️",
+      img: "https://i.ibb.co/ynhXKW7d/Screenshot-20260429-151520-com-facebook-katana-Immersive-React-Activity.jpg",
+      tag: "En proceso",
+      waText: "Hola%2C%20me%20interesa%20la%20Victory%20Arizona%20200%20(26.500%20km)%20en%20Certimotos.%20Quisiera%20m%C3%A1s%20informaci%C3%B3n."
+    }
   ];
 
+  const motoGalleries = {
+    1: [
+      "https://i.ibb.co/xtKK9dZS/AI-Product-Images-Victory-Arizona-200-Fox-2026-107dcc-e1c790fdc8a74394a867ead37c584c29-mv2-png.png",
+      "https://i.ibb.co/QvfFQ6B4/AI-Product-Images-Victory-Arizona-200-Fox-2026-107dcc-f03bd33e05dc4e808f30cb6103a13d6b-mv2-png.png",
+      "https://i.ibb.co/j9TBL1cW/655247604-943942851668380-4364499282023688372-n.jpg",
+      "https://i.ibb.co/fY9kwdxL/656225527-1719927132750740-7974423783463517447-n.jpg"
+    ],
+    2: [
+      "https://i.ibb.co/ynhXKW7d/Screenshot-20260429-151520-com-facebook-katana-Immersive-React-Activity.jpg",
+      "https://i.ibb.co/dsXL5TZs/Screenshot-20260429-151517-com-facebook-katana-Immersive-React-Activity.jpg",
+      "https://i.ibb.co/wZtcJGBZ/Screenshot-20260429-151514-com-facebook-katana-Immersive-React-Activity.jpg",
+      "https://i.ibb.co/Vcq2BGQW/Screenshot-20260429-151510-com-facebook-katana-Immersive-React-Activity.jpg",
+      "https://i.ibb.co/Mk6phY3j/Screenshot-20260429-151507-com-facebook-katana-Immersive-React-Activity.jpg"
+    ]
+  };
+
+  function buildGallery(id) {
+    const imgs = motoGalleries[id] || [];
+    if (!imgs.length) return '<div class="gal-main"><div class="gal-placeholder">🏍️</div></div>';
+    const [main, ...thumbs] = imgs;
+    const thumbsHtml = thumbs.map(src =>
+      `<div class="gal-thumb"><img src="${src}" alt="foto"></div>`
+    ).join('');
+    return `<div class="gal-main"><img src="${main}" alt="foto principal"></div>${thumbsHtml}`;
+  }
   // ── RENDER CATALOG ────────────────────
-  const grid = document.getElementById('catalogGrid');
   motos.forEach(m => {
     grid.innerHTML += `
     <div class="moto-card" onclick="openModal(${m.id})">
       <div class="moto-img">
         <div class="moto-img-placeholder" style="display:none">${m.emoji}</div>
         <img src="${m.img}" alt="${m.nombre}" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s">
-        <span class="cert-badge">✓ Certificada</span>
+        <span class="cert-badge" style="${m.tag === 'En proceso' ? 'background:var(--accent)' : ''}">${m.tag === 'En proceso' ? '⏳ En proceso' : '✓ Certificada'}</span>
       </div>
       <div class="moto-body">
         <div class="moto-name">${m.nombre}</div>
@@ -803,7 +838,7 @@
     document.getElementById('md-descripcion').textContent = m.descripcion;
     document.getElementById('md-precio').textContent = m.precio;
     document.getElementById('md-precio-nota').textContent = m.precioNota;
-    // Extras list
+    document.getElementById('modalGallery').innerHTML = buildGallery(id);
     const extrasEl = document.getElementById('md-extras');
     extrasEl.innerHTML = m.extras.map(e => `<li>✔️ ${e}</li>`).join('');
     document.getElementById('btnCompra').href = `https://wa.me/573014082298?text=${m.waText}`;
